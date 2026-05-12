@@ -1,0 +1,117 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Static and media files
+staticfiles/
+media/
+
+# Python distribution files
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# django-tailwind
+theme/static_src/node_modules/
+theme/staticfiles/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Docker
+*.pid
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# S3 collected static files
+/static_cdn/
+/media_cdn/
+
+# Gunicorn
+gunicorn.pid
+
+# Backup files
+*.bak
+
+# Secrets
+secrets.json
+  
+
+# Docker overrides
+docker-compose.override.yml
+
+# AWS credentials
+.aws/
+
+
