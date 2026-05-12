@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="max-w-fit mx-auto  mt-20 p-8 shadow-2xl text-left  shadow-slate-400 rounded-lg">
+            <h1 class="mb-1 font-semibold text-lg">Login Form :</h1>
+                {% for field in form  %}
+                    
+
+                        <div>{{field.label_tag}}</div>
+                        <div class=" block [&>*]:w-full">{{field}}</div>
+                        <div>{{ field.errors }}</div>
+                        {% if messages %}
+                                {% for message in messages %}
+                                    {{message}}
+                                {% endfor %}
+                        {% endif %}
+
+
+                    {% endfor %}
+                <div class="flex justify-center items-center">
+                    <button class="p-2 mt-5 bg-sky-700 text-white font-semibold rounded-lg">Submit</button>
+                </div>
+        </div>
+
+    </form>
+{% endblock content %}

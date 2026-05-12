@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}stored posts{% endblock title %}
+
+
+{% block content %}
+
+    <div class="w-2/4 mx-auto shadow-2xl shadow-slate-500 text-center rounded-md ">
+        <ul class="mx-auto my-12 text-slate-700 text-2xl font-semibold">
+            {% if not has_post %}
+                <p>Nothing in this list.</p>
+            {% endif %}
+            {% for post in post_list%}
+                <li class="w-1/2 mx-auto">
+                    <div class="grid grid-cols-2 align-middle">
+                        <img class="w-24 h-24 mt-2 rounded-full " src={{ post.image.url }} alt={{ post.title }}>
+                        <a class=" hover:text-slate-900 mt-10"href="{% url "detailed_post" post.slug %}"> 
+                            {{ post.title }}</a>
+                    </div>
+                </li>
+
+                <div class="w-1/2 my-2 mx-auto border-b-2 border-slate-300 "></div>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock content %}

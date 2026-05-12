@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Registration form
+{% endblock title %}
+
+
+{% block content %}
+<div class=" max-w-fit mt-5 p-10 mx-auto rounded-lg shadow-2xl shadow-slate-400 text-left ">
+    <p class="mb-1 font-semibold text-lg">  Register Form :</p>
+    <form method="post">
+        {% csrf_token %} 
+        {% for field in form %}
+            <div class="mt-1">
+                <div>{{ field.label_tag }}</div>
+                <div class=" block [&>*]:w-full" >{{ field }}</div>
+                <div>{{ field.errors }}</div>
+            </div>
+
+        {% endfor %}
+                <div class="flex justify-center items-center">
+                    <button class="p-2 mt-5 bg-sky-700 text-white font-semibold rounded-lg">Submit</button>
+                </div>
+    </form>
+</div>
+{% endblock content %}
