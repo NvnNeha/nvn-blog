@@ -1,10 +1,162 @@
 @import "tailwindcss";
 
-/**
-  * A catch-all path to Django template files, JavaScript, and Python files
-  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
-  *
-  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
-  * the scope of this path.
-  */
 @source "../../../**/*.{html,py,js}";
+
+@theme {
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background: #05060d;
+    color: #e2e8f0;
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(60rem 40rem at 80% -10%, rgba(56, 189, 248, 0.10), transparent 60%),
+      radial-gradient(50rem 35rem at 0% 20%, rgba(217, 70, 239, 0.10), transparent 60%),
+      radial-gradient(45rem 30rem at 100% 100%, rgba(99, 102, 241, 0.08), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgba(56, 189, 248, 0.35);
+    color: white;
+  }
+
+  input, textarea, select {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    color: #e2e8f0 !important;
+    border-radius: 0.625rem !important;
+    padding: 0.625rem 0.875rem !important;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none !important;
+    border-color: rgba(56, 189, 248, 0.55) !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  label {
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 10px 30px -10px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  .text-gradient {
+    background: linear-gradient(110deg, #67e8f9 0%, #d946ef 50%, #f472b6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(110deg, #06b6d4 0%, #a855f7 50%, #ec4899 100%);
+    box-shadow: 0 10px 25px -8px rgba(168, 85, 247, 0.55);
+    transition: transform .15s, box-shadow .15s, filter .15s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px -8px rgba(168, 85, 247, 0.75);
+    filter: brightness(1.05);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: white;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #67e8f9;
+    background: rgba(34, 211, 238, 0.10);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  .card-hover {
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    border-color: rgba(168, 85, 247, 0.35);
+    box-shadow:
+      0 20px 40px -15px rgba(0, 0, 0, 0.6),
+      0 0 30px -10px rgba(168, 85, 247, 0.35);
+  }
+
+  .placeholder-art {
+    background:
+      radial-gradient(circle at 30% 20%, rgba(34, 211, 238, 0.4), transparent 45%),
+      radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.4), transparent 45%),
+      linear-gradient(135deg, #0f172a, #1e1b4b);
+  }
+}

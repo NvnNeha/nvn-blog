@@ -14,7 +14,7 @@ class UserRegistrationForm(UserCreationForm):
 
 
 
-class CommentModel(forms.ModelForm):
+class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ["user_name", "user_email", "text"]
@@ -23,6 +23,9 @@ class CommentModel(forms.ModelForm):
             "user_email": "Your Email",
             "text": "Your Comment"
         }
+
+
+CommentModel = CommentForm
 
 class CreatePostForm(forms.ModelForm):
     class Meta:

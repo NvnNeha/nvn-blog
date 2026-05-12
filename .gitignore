@@ -113,5 +113,3 @@ docker-compose.override.yml
 
 # AWS credentials
 .aws/
-
-

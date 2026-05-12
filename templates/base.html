@@ -4,97 +4,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="{% static "blog/favicon.ico" %}">
+    <meta name="theme-color" content="#05060d">
+    <link rel="icon" type="image/x-icon" href="{% static 'blog/favicon.ico' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title>{% block title %}Nvn's Blog{% endblock title %}</title>
+    <title>{% block title %}NVN.BLOG — Signals from the future{% endblock title %}</title>
     {% tailwind_css %}
 </head>
-<body>
-    <header class=" bg-slate-400">
-        <nav class=" flex justify-between items-center h-16 px-12 ">
-            <a class="font-bold text-xl whitespace-nowrap "href={% url "starting_page" %}>Nvn's Blog</a>
-            <div id="MobileMenu" class="absolute -top-full w-full left-0 md:static md:gap-4 md:mx-40 py-2">
-                <ul class="flex flex-col justify-center items-center md:font-semibold md:flex-row md:items-end md:justify-end gap-2 px-4 md:p-0  bg-slate-400 " >
-                    <li><a class= " py-2 px-3 bg-slate-400  hover:text-slate-900 hover:scale-105 whitespace-nowrap " href={% url "all_posts" %}>All posts</a></li>
-                    <li><a class= "py-2 px-3 bg-slate-400  hover:text-slate-900 hover:scale-105 whitespace-nowrap " href={% url "stored_posts" %}>Stored posts</a></li>
-                     <li class="block py-2 px-3 rounded-sm  bg-slate-400   md:border-0 hover:text-slate-900 md:p-0 hover:scale-105">
-                            {% if user.is_authenticated %}
-                                <form action="/" method="post">
-                                    {% csrf_token %}
-                                    <button class="block py-2 px-3 bg-slate-400 rounded-sm md:border-0  md:p-0 dark:text-white hover:scale-105 hover:text-slate-900  dark:hover:text-white md:dark:hover:bg-transparent">logout</button>
-                                </form>
-                            {% else %}
-                            </li>
-                    <li><a class="py-2 px-3 hover:text-slate-900  hover:scale-105" href={% url "user_login" %}>Login</a></li>
-                    <li><a class="py-2 px-3 hover:text-slate-900  hover:scale-105" href={% url "user_register" %}>Register</a></li>
-                 {% endif %}
-                  </ul>
-            </div>
+<body class="text-slate-200">
+    <div class="fixed inset-0 -z-10 grid-bg pointer-events-none"></div>
 
-            
-            <div id="MenuBtn" class= " md:hidden  hover:text-slate-900  md:p-0 hover:scale-105">
-                <i class="fa-solid fa-bars fa-2x " ></i>
+    <header class="sticky top-0 z-40 backdrop-blur-xl bg-[#05060d]/70 border-b border-white/5">
+        <nav class="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 h-16">
+            <a class="flex items-center gap-2 font-display font-bold text-lg sm:text-xl whitespace-nowrap" href="{% url 'starting_page' %}">
+                <span class="w-7 h-7 rounded-lg bg-linear-to-br from-cyan-400 via-fuchsia-500 to-pink-500 shadow-lg shadow-fuchsia-500/30 flex items-center justify-center text-white text-xs">N</span>
+                <span class="text-gradient">NVN.BLOG</span>
+            </a>
+
+            <button id="MenuBtn" class="md:hidden text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/5" aria-label="Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div id="MobileMenu" class="hidden md:flex items-center gap-1 absolute md:static top-16 left-0 right-0 md:top-auto bg-[#05060d]/95 md:bg-transparent border-b md:border-0 border-white/5 flex-col md:flex-row px-4 md:px-0 py-4 md:py-0">
+                <a class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5" href="{% url 'all_posts' %}">All posts</a>
+                <a class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5" href="{% url 'stored_posts' %}">Saved</a>
+                {% if user.is_authenticated %}
+                    <a class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5" href="{% url 'create_post' %}">
+                        <i class="fa-solid fa-plus text-xs mr-1"></i>New
+                    </a>
+                    <form action="{% url 'user_logout' %}" method="post" class="md:ml-2">
+                        {% csrf_token %}
+                        <button class="btn-ghost text-sm py-2" type="submit">
+                            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                            <span>Sign out</span>
+                        </button>
+                    </form>
+                {% else %}
+                    <a class="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5" href="{% url 'user_login' %}">Login</a>
+                    <a class="btn-primary text-sm md:ml-2" href="{% url 'user_register' %}">Get started</a>
+                {% endif %}
             </div>
         </nav>
-    </header>    
-    {% block content %}
-    
-    {% endblock content %}
-    <footer class="bg-slate-400 mt-10">
-  <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-8">
+    </header>
 
-    <!-- About -->
-    <div>
-      <h2 class="text-white text-xl font-semibold mb-3">Nvn's Blog</h2>
-      <p class="text-sm">
-        I love AWS and Linux to provide solution and I enjoy to exploring new technologies in general!
-      </p>
-    </div>
+    <main class="min-h-[calc(100vh-4rem-12rem)]">
+        {% block content %}{% endblock content %}
+    </main>
 
-    <!-- Quick Links -->
-    <div>
-      <h2 class="text-white text-lg font-semibold mb-3">Quick Links</h2>
-      <ul class="space-y-2 text-sm">
-        <li><a href="{% url 'starting_page' %}" class="hover:text-white">Home</a></li>
-        <li><a href="#" class="hover:text-white">About</a></li>
-        <li><a href="#" class="hover:text-white">Blog</a></li>
-        <li><a href="#" class="hover:text-white">Contact</a></li>
-      </ul>
-    </div>
+    <footer class="mt-20 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-8">
+            <div class="md:col-span-2">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="w-7 h-7 rounded-lg bg-linear-to-br from-cyan-400 via-fuchsia-500 to-pink-500"></span>
+                    <h2 class="font-display text-xl text-white">NVN.BLOG</h2>
+                </div>
+                <p class="text-sm text-slate-400 max-w-md">
+                    Signals from the future — notes on AWS, Linux, and whatever else I'm tinkering with this week.
+                </p>
+            </div>
 
-    <!-- Contact -->
-    <div>
-      <h2 class="text-white text-lg font-semibold mb-3">Contact</h2>
-      <p class="text-sm">Email: naveen@example.com</p>
-      <p class="text-sm">India</p>
-    </div>
+            <div>
+                <h3 class="text-white text-sm font-semibold mb-3 tracking-wide uppercase">Explore</h3>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li><a href="{% url 'starting_page' %}" class="hover:text-white">Home</a></li>
+                    <li><a href="{% url 'all_posts' %}" class="hover:text-white">All posts</a></li>
+                    <li><a href="{% url 'stored_posts' %}" class="hover:text-white">Saved</a></li>
+                </ul>
+            </div>
 
-    <!-- Social -->
-    <div>
-      <h2 class="text-white text-lg font-semibold mb-3">Follow Me</h2>
-      <div class="flex space-x-4 text-xl">
-        <a href="#" class="hover:text-white"><i class="fab fa-github"></i></a>
-        <a href="#" class="hover:text-white"><i class="fab fa-linkedin"></i></a>
-        <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
-      </div>
-    </div>
+            <div>
+                <h3 class="text-white text-sm font-semibold mb-3 tracking-wide uppercase">Connect</h3>
+                <div class="flex gap-3 text-slate-400">
+                    <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:text-white"><i class="fab fa-github"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:text-white"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-lg glass flex items-center justify-center hover:text-white"><i class="fab fa-x-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-xs text-slate-500 border-t border-white/5 py-5">
+            © 2026 NVN.BLOG — built with Django + Tailwind
+        </div>
+    </footer>
 
-  </div>
-
-  <!-- Bottom -->
-  <div class="text-center text-sm border-t border-gray-700 py-4">
-    © 2026 Nvn's Blog. All rights reserved.
-  </div>
-</footer>
     <script>
         const MenuBtn = document.getElementById("MenuBtn");
         const MobileMenu = document.getElementById("MobileMenu");
-
-        MenuBtn.addEventListener("click", () => {
-            MobileMenu.classList.toggle("top-12");
+        MenuBtn?.addEventListener("click", () => {
+            MobileMenu.classList.toggle("hidden");
+            MobileMenu.classList.toggle("flex");
         });
     </script>
-
 </body>
 </html>
-

@@ -1,27 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}stored posts{% endblock title %}
-
+{% block title %}Saved posts — NVN.BLOG{% endblock title %}
 
 {% block content %}
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+        <p class="text-xs tracking-widest uppercase text-fuchsia-300 mb-2">Saved</p>
+        <h1 class="font-display text-4xl text-white">
+            <i class="fa-solid fa-bookmark text-fuchsia-400 mr-2"></i>
+            Read later
+        </h1>
+        <p class="mt-2 text-slate-400 text-sm">Posts you've flagged to come back to.</p>
 
-    <div class="w-2/4 mx-auto shadow-2xl shadow-slate-500 text-center rounded-md ">
-        <ul class="mx-auto my-12 text-slate-700 text-2xl font-semibold">
-            {% if not has_post %}
-                <p>Nothing in this list.</p>
-            {% endif %}
-            {% for post in post_list%}
-                <li class="w-1/2 mx-auto">
-                    <div class="grid grid-cols-2 align-middle">
-                        <img class="w-24 h-24 mt-2 rounded-full " src={{ post.image.url }} alt={{ post.title }}>
-                        <a class=" hover:text-slate-900 mt-10"href="{% url "detailed_post" post.slug %}"> 
-                            {{ post.title }}</a>
-                    </div>
-                </li>
-
-                <div class="w-1/2 my-2 mx-auto border-b-2 border-slate-300 "></div>
-            {% endfor %}
-        </ul>
-    </div>
-
+        {% if not has_post %}
+            <div class="mt-10 glass rounded-2xl p-12 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full glass flex items-center justify-center mb-4">
+                    <i class="fa-regular fa-bookmark text-slate-400 text-xl"></i>
+                </div>
+                <p class="text-slate-400">Nothing saved yet. Tap "Save for later" on any post to add it here.</p>
+                <a href="{% url 'all_posts' %}" class="btn-ghost mt-6 inline-flex">Browse posts</a>
+            </div>
+        {% else %}
+            <ul class="mt-8 space-y-3">
+                {% for post in post_list %}
+                    <li class="glass rounded-xl p-4 sm:p-5 card-hover flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 {% if not post.image %}placeholder-art{% endif %}">
+                            {% if post.image %}
+                                <img class="w-full h-full object-cover" src="{{ post.image.url }}" alt="{{ post.title }}">
+                            {% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <a href="{% url 'detailed_post' post.slug %}" class="block font-display font-semibold text-white hover:text-gradient">
+                                {{ post.title|title }}
+                            </a>
+                            <p class="text-sm text-slate-400 truncate">{{ post.excerpt }}</p>
+                        </div>
+                        <a href="{% url 'detailed_post' post.slug %}" class="text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </section>
 {% endblock content %}

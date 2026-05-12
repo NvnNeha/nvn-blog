@@ -1,28 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}create user{% endblock title %}
-
+{% block title %}New post — NVN.BLOG{% endblock title %}
 
 {% block content %}
-<div class="max-w-fit mt-5 p-10 mx-auto rounded-lg shadow-2xl shadow-slate-400 text-left ">
-    <p class="mb-1 font-semibold text-lg flex justify-center items-center"> Create Post :</p>
-<form method="post" enctype="multipart/form-data">
+    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-16">
+        <p class="text-xs tracking-widest uppercase text-cyan-300 mb-2">Compose</p>
+        <h1 class="font-display text-4xl text-white">Broadcast a new transmission</h1>
+        <p class="mt-2 text-slate-400 text-sm">Fill in the details below and ship it.</p>
 
-    {% csrf_token %}
-
-    {% for field in form %}
-            <div class="mt-1">
-                <div>{{ field.label_tag }}</div>
-                <div class=" border border-gray-300 block [&>*]:w-full" >{{ field }}</div>
-                <div>{{ field.errors }}</div>
-            </div>
-
-    {% endfor %}
-    <div class="flex justify-center items-center">
-                    <button class="p-2 mt-5 bg-sky-700 text-white font-semibold rounded-lg">Submit</button>
+        <form method="post" enctype="multipart/form-data" class="mt-8 glass rounded-2xl p-6 sm:p-8 space-y-5">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="space-y-1.5">
+                    <div>{{ field.label_tag }}</div>
+                    <div class="*:w-full">{{ field }}</div>
+                    {% if field.help_text %}
+                        <p class="text-xs text-slate-500">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-xs text-pink-400">{{ field.errors|join:", " }}</div>
+                    {% endif %}
                 </div>
-</form>
-
-</div>
-
+            {% endfor %}
+            <div class="flex gap-3 pt-2">
+                <button class="btn-primary" type="submit">
+                    <i class="fa-solid fa-paper-plane text-xs"></i> Publish
+                </button>
+                <a href="{% url 'starting_page' %}" class="btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </section>
 {% endblock content %}

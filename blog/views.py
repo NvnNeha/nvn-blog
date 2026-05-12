@@ -1,150 +1,165 @@
-from django.shortcuts import render,get_object_or_404,redirect
-from django.urls import reverse
-from django.http import HttpResponse,HttpResponseRedirect
-from .models import Post,Comment,Tag
-from django.contrib.auth import login, logout,authenticate
-from django.contrib.auth.decorators import login_required
-from .forms import CommentModel,CreatePostForm,UserRegistrationForm
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
-# Create your views here.
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    UpdateView,
+    View,
+)
 
-def starting_page(request):
-    posts = Post.objects.all().order_by("-date")[:3]
-    if request.method == "POST":
-        logout(request)
-    return render(request, "blog/starting_page.html", {"posts": posts})
-
-
-def all_posts(request):
-    posts = Post.objects.all().order_by("-date")
-    return render(request, "blog/all_posts.html", {"posts": posts})
-
-
-def detailed_post(request,slug):
-    post = get_object_or_404(Post, slug=slug)
-    stored_list = request.session.get("stored_list")
-    if stored_list is not None:
-        is_save_for_later = post.id in stored_list
-    else:
-        is_save_for_later = False 
-
-    comment_form = CommentModel()
-    if request.method == "POST":
-        comment_form = CommentModel(request.POST)
-        if comment_form.is_valid():
-            wait =comment_form.save(commit=False)
-            wait.post = post
-            wait.save()
-            return HttpResponseRedirect(reverse("detailed_post", args=[slug])) 
-    return render(request, "blog/detailed_post.html", {
-        "post": post, 
-        "comment_form": comment_form,
-        "post_tag": post.tags.all(),
-        "comments": post.comments.all().order_by("-id"),
-        "is_save_for_later" : is_save_for_later
-        })
+from .forms import CommentForm, CreatePostForm, UserRegistrationForm
+from .models import Post
 
 
-def user_login(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+def _unique_slug(base, *, exclude_pk=None):
+    base = slugify(base) or "post"
+    slug = base
+    n = 2
+    qs = Post.objects.all()
+    if exclude_pk is not None:
+        qs = qs.exclude(pk=exclude_pk)
+    while qs.filter(slug=slug).exists():
+        slug = f"{base}-{n}"
+        n += 1
+    return slug
+
+
+class HomeView(ListView):
+    model = Post
+    template_name = "blog/starting_page.html"
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        return Post.objects.all().order_by("-date")[:3]
+
+
+class AllPostsView(ListView):
+    model = Post
+    template_name = "blog/all_posts.html"
+    context_object_name = "posts"
+    paginate_by = 12
+
+    def get_queryset(self):
+        return Post.objects.all().order_by("-date")
+
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "blog/detailed_post.html"
+    context_object_name = "post"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        post = self.object
+        stored_list = self.request.session.get("stored_list") or []
+        ctx["is_save_for_later"] = post.id in stored_list
+        ctx["post_tag"] = post.tags.all()
+        ctx["comments"] = post.comments.all().order_by("-id")
+        ctx["comment_form"] = kwargs.get("comment_form") or CommentForm()
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
         if form.is_valid():
-            user = authenticate(username=form.cleaned_data['username'],
-                                password=form.cleaned_data['password'])
-            if user is not None:
-                login(request, user)
-                return redirect('/')
-            else:
-                return render(request, "registration/login.html", {"form": form})                
-    else:
-        form = AuthenticationForm(request)          
-    return render(request, "registration/login.html", {"form": form})  
+            comment = form.save(commit=False)
+            comment.post = self.object
+            comment.save()
+            return redirect("detailed_post", slug=self.object.slug)
+        ctx = self.get_context_data(comment_form=form)
+        return self.render_to_response(ctx)
 
 
+class RegisterView(CreateView):
+    form_class = UserRegistrationForm
+    template_name = "registration/register.html"
+    success_url = reverse_lazy("starting_page")
 
-def user_register(request):
-    if request.method == "POST":
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(username = form.cleaned_data["username"],
-                                            email = form.cleaned_data["email"],
-                                            password = form.cleaned_data["password1"])
-            user.save()
-            login(request, user)
-            return redirect("/")
-    else:
-        form = UserRegistrationForm()
-    return render(request, "registration/register.html", {
-        "form" : form,
-    })
+    def form_valid(self, form):
+        user = User.objects.create_user(
+            username=form.cleaned_data["username"],
+            email=form.cleaned_data["email"],
+            password=form.cleaned_data["password1"],
+        )
+        login(self.request, user)
+        return redirect(self.success_url)
 
-def stored_posts(request):
-    if request.method == "POST":
-        stored_list = request.session.get("stored_list")
-        if stored_list is None:
-            request.session["stored_list"] = []
-            stored_list = request.session.get("stored_list")
 
-        post_id = int(request.POST["post-id"])
-            
-        if post_id not in stored_list:
+class StoredPostsView(View):
+    template_name = "blog/stored_posts.html"
+
+    def get(self, request):
+        from django.shortcuts import render
+
+        stored_list = request.session.get("stored_list") or []
+        if not stored_list:
+            return render(request, self.template_name, {"has_post": False})
+        return render(
+            request,
+            self.template_name,
+            {"has_post": True, "post_list": Post.objects.filter(id__in=stored_list)},
+        )
+
+    def post(self, request):
+        stored_list = request.session.get("stored_list") or []
+        try:
+            post_id = int(request.POST.get("post-id", ""))
+        except (TypeError, ValueError):
+            return redirect("starting_page")
+        if post_id in stored_list:
+            stored_list.remove(post_id)
+        else:
             stored_list.append(post_id)
-        else:
-            stored_list.remove(post_id)    
         request.session["stored_list"] = stored_list
-        return redirect("/")
-
-    if request.method == "GET":
-        stored_list = request.session.get("stored_list")
-        context = {}
-        if stored_list is None or len(stored_list)==0:
-            context["has_post"]= False
-        else:
-            context["has_post"]= True
-            context["post_list"] = Post.objects.filter(id__in=stored_list)
-        return render(request, "blog/stored_posts.html", context)
-    
-
-@login_required
-def create_post(request):
-    if request.method == "POST":
-        form = CreatePostForm(request.POST, request.FILES)
-        if form.is_valid():
-            wait = form.save(commit=False)
-            wait.user = request.user
-            wait.slug = slugify(form.cleaned_data["title"])
-            wait.save()
-            form.save_m2m()
-
-            return redirect("starting_page")
-    else:        
-        form = CreatePostForm()
-    return render(request, "blog/create_post.html", {"form":form })
+        return redirect(request.META.get("HTTP_REFERER") or reverse("starting_page"))
 
 
-@login_required
-def edit_post(request, slug):
-    post= get_object_or_404(Post, slug=slug, user=request.user)
-    if request.method == "POST":
-        form = CreatePostForm(request.POST, request.FILES, instance=post)
-        if form.is_valid():
-            wait = form.save(commit=False)
-            wait.user = request.user
-            wait.slug = slugify(form.cleaned_data["title"])
-            wait.save()
-            form.save_m2m()
-            return redirect("starting_page")
-    else:
-        form = CreatePostForm(instance=post)
-    return render(request, "blog/edit_post.html", {"form":form})
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = CreatePostForm
+    template_name = "blog/create_post.html"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.slug = _unique_slug(form.cleaned_data["title"])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("detailed_post", args=[self.object.slug])
 
 
-@login_required
-def delete_post(request, slug):
-    post= get_object_or_404(Post, slug=slug, user=request.user)
-    if request.method == "POST":
-        post.delete()
-        return redirect('starting_page')
-    return render(request, "blog/delete_post.html", {"post": post})
+class AuthorRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.get_object().user_id == self.request.user.id
+
+
+class PostUpdateView(AuthorRequiredMixin, UpdateView):
+    model = Post
+    form_class = CreatePostForm
+    template_name = "blog/edit_post.html"
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.slug = _unique_slug(
+            form.cleaned_data["title"], exclude_pk=self.object.pk
+        )
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("detailed_post", args=[self.object.slug])
+
+
+class PostDeleteView(AuthorRequiredMixin, DeleteView):
+    model = Post
+    template_name = "blog/delete_post.html"
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
+    success_url = reverse_lazy("starting_page")

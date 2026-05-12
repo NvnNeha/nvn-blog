@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Delete Post — NVN.BLOG{% endblock title %}
+{% block title %}Delete post — NVN.BLOG{% endblock title %}
 
 {% block content %}
     <section class="max-w-xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-        <div class="glass rounded-2xl sm:rounded-3xl p-6 sm:p-10 text-center border border-pink-500/30">
-            <div class="w-16 h-16 mx-auto rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-3xl">⚠️</div>
-            <h1 class="font-display text-2xl sm:text-3xl text-white mt-4">Delete this post?</h1>
-            <p class="text-slate-400 mt-2 break-words">"{{ post.title }}" will be permanently removed.</p>
+        <div class="glass rounded-3xl p-6 sm:p-10 text-center border border-pink-500/30">
+            <div class="w-16 h-16 mx-auto rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-3xl">
+                <i class="fa-solid fa-triangle-exclamation text-pink-400"></i>
+            </div>
+            <h1 class="font-display text-2xl sm:text-3xl text-white mt-5">Delete this post?</h1>
+            <p class="text-slate-400 mt-2 break-words">"{{ post.title }}" will be permanently removed. This cannot be undone.</p>
 
             <form method="post" class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 {% csrf_token %}
-                <button class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-rose-600 text-white font-semibold shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition">
+                <button class="px-5 py-2.5 rounded-xl bg-linear-to-r from-pink-500 to-rose-600 text-white font-semibold shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition" type="submit">
                     Yes, delete
                 </button>
-                <a class="btn-ghost" href="{% url 'starting_page' %}">Cancel</a>
+                <a class="btn-ghost justify-center" href="{% url 'detailed_post' post.slug %}">Cancel</a>
             </form>
         </div>
     </section>
