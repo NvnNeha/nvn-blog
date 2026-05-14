@@ -56,11 +56,11 @@
         </div>
 
         {% if post.image %}
-            <div class="mt-8 rounded-2xl overflow-hidden border border-white/5">
-                <img class="w-full max-h-[480px] object-cover" src="{{ post.image.url }}" alt="{{ post.title }}">
+            <div class="mt-8 rounded-2xl overflow-hidden border border-white/5 aspect-video">
+                <img class="w-full h-full object-contain" src="{{ post.image.url }}" alt="{{ post.title }}">
             </div>
         {% else %}
-            <div class="mt-8 rounded-2xl placeholder-art h-56"></div>
+            <div class="mt-8 rounded-2xl placeholder-art aspect-video"></div>
         {% endif %}
 
         <div class="mt-8 glass rounded-2xl p-6 sm:p-10 prose-invert max-w-none text-slate-200 text-lg leading-relaxed">

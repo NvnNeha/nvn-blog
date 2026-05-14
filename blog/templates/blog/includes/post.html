@@ -4,7 +4,7 @@
             <a href="{% url 'detailed_post' post.slug %}" class="block">
                 <div class="aspect-video overflow-hidden {% if not post.image %}placeholder-art{% endif %} relative">
                     {% if post.image %}
-                        <img class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="{{ post.image.url }}" alt="{{ post.title }}">
+                        <img class="w-full h-full object-contain group-hover:scale-105 transition duration-500 ease-in-out" src="{{ post.image.url }}" alt="{{ post.title }}">
                     {% else %}
                         <div class="absolute inset-0 flex items-center justify-center">
                             <span class="font-display text-4xl text-white/40">{{ post.title|first|upper }}</span>

@@ -77,6 +77,8 @@ dmypy.json
 
 # Linux
 *~
+# Media
+images/*
 
 # Windows
 Thumbs.db
