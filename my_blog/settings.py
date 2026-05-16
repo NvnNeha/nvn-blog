@@ -2,6 +2,7 @@
 Django settings for my_blog project.
 """
 
+import os
 from pathlib import Path
 from decouple import config, Csv
 
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     "blog",
     "tailwind",
     "theme",
+    "storages",
 ]
 
 TAILWIND_APP_NAME = "theme"
@@ -84,10 +86,10 @@ WSGI_APPLICATION = "my_blog.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME":"mypost",
-        "USER": "admin",
-        "PASSWORD": "password",
-        "HOST": "localhost",
+        "NAME":os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
         "PORT": "5432"
     }
 }
@@ -105,21 +107,9 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-STORAGES = {
-    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-        if not DEBUG
-        else "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
-
 MEDIA_ROOT = BASE_DIR / "images"
-MEDIA_URL = "images/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -138,3 +128,19 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_REFERRER_POLICY = "same-origin"
     X_FRAME_OPTIONS = "DENY"
+
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = "my-blog-github"
+AWS_S3_REGION_NAME = "ap-south-1"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+AWS_QUERYSTRING_AUTH = False
+
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+
+STORAGES = {
+    "default": {"BACKEND": "custom_storages.MediaFileStorage"},
+    "staticfiles": {"BACKEND": "custom_storages.StaticfileStorage"},
+}
